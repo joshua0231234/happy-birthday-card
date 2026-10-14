@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎂 Feliz Cumpleaños Elsa</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:system-ui,sans-serif;overflow:hidden;height:100vh;background:#0a0a1a}
+        .screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:all .6s;transform:scale(.95)}
+        .screen.active{opacity:1;pointer-events:all;transform:scale(1)}
+        .btn{padding:14px 40px;border:none;border-radius:50px;font-size:16px;font-weight:600;cursor:pointer;margin-top:20px;transition:all .3s;letter-spacing:.3px}
+        .btn:hover{transform:translateY(-3px)}
+        .btn-red{background:#e74c3c;color:white;box-shadow:0 8px 25px rgba(231,76,60,.4)}
+        .btn-purple{background:#9b59b6;color:white}
+        .stars{position:fixed;inset:0;pointer-events:none}
+        .star{position:absolute;width:2px;height:2px;background:white;border-radius:50%;animation:twinkle 2s infinite alternate}
+        @keyframes twinkle{0%{opacity:.3}100%{opacity:1}}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+        @keyframes popIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+        @keyframes confetti-fall{0%{opacity:1}100%{top:110vh;transform:rotate(720deg) scale(.5);opacity:.3}}
+        @keyframes float-up{0%{opacity:.9}100%{bottom:110vh;opacity:.2}}
+        .confetti{position:fixed;width:10px;height:10px;top:-20px;animation:confetti-fall linear forwards;z-index:100}
+        .balloon{position:fixed;bottom:-150px;font-size:40px;animation:float-up linear forwards;z-index:50}
+
+        /* P1 - TRAILER */
+        #s1{background:#000}
+        .t-text{font-size:26px;color:white;text-align:center;opacity:0;transition:all 1.5s;max-width:500px;padding:0 20px;letter-spacing:1px}
+        .t-text.show{opacity:1}
+
+        /* P2 - ENTRADA */
+        #s2{background:radial-gradient(ellipse at center,#1a1a3e,#0a0a1a)}
+        .intro{font-size:34px;color:white;text-align:center;animation:fadeIn 1s}
+        .intro span{display:block;margin-top:12px;font-size:16px;color:rgba(255,255,255,.7);font-weight:300}
+
+        /* P3 - SOBRE */
+        #s3{background:radial-gradient(ellipse at center,#2d1b4e,#0a0a1a)}
+        .envelope{width:300px;height:200px;background:white;border-radius:15px;position:relative;cursor:pointer;box-shadow:0 25px 60px rgba(0,0,0,.5);transition:transform .3s}
+        .envelope:hover{transform:rotateY(-5deg) rotateX(5deg)}
+        .envelope::before{content:'❤️';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:50px;animation:pulse 1.5s infinite}
+        .env-label{font-family:Georgia,serif;font-size:28px;color:white;margin-top:80px;font-style:italic;letter-spacing:1px}
+        .after-env{display:none;text-align:center;margin-top:30px;animation:fadeIn .5s}
+        .after-env h2{color:white;font-size:22px;margin-bottom:10px}
+        .after-env p{color:rgba(255,255,255,.7);font-size:14px}
+
+        /* P4 - CAJAS */
+        #s4{background:radial-gradient(ellipse at center,#1a2a3e,#0a0a1a)}
+        .gifts{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin:20px 0}
+        .gift{width:100%;aspect-ratio:1;background:linear-gradient(135deg,#e74c3c,#c0392b);border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:40px;cursor:pointer;transition:all .3s}
+        .gift:hover{transform:scale(1.1) rotate(5deg)}
+        .gift.open{background:#27ae60}
+        .gift-msg{display:none;background:rgba(255,255,255,.1);padding:20px;border-radius:15px;margin-top:15px;color:white;font-size:14px;line-height:1.8}
+        .gift-msg.show{display:block;animation:fadeIn .5s}
+        .title{font-size:24px;color:white;text-align:center;margin-bottom:15px}
+
+        /* P5 - MAPA */
+        #s5{background:radial-gradient(ellipse at center,#2a1a3e,#0a0a1a)}
+        .map-point{display:flex;align-items:center;gap:12px;padding:12px;margin:8px 0;background:rgba(255,255,255,.08);border-radius:12px;cursor:pointer;transition:all .3s;border-left:3px solid #e74c3c}
+        .map-point:hover{transform:translateX(8px);background:rgba(255,255,255,.15)}
+        .map-detail{display:none;background:rgba(255,255,255,.1);padding:15px;border-radius:12px;margin-top:10px;color:white;font-size:14px;line-height:1.7}
+        .map-detail.show{display:block;animation:fadeIn .5s}
+
+        /* P6 - MEDIDOR */
+        #s6{background:radial-gradient(ellipse at center,#1a3a2e,#0a0a1a)}
+        .meter-bar{width:100%;max-width:350px;height:25px;background:rgba(255,255,255,.1);border-radius:12px;overflow:hidden;margin:0 auto 15px;border:2px solid rgba(255,255,255,.2)}
+        .meter-fill{height:100%;background:linear-gradient(90deg,#e74c3c,#ff6b6b);width:0%;transition:width .1s}
+        .meter-pct{font-size:42px;color:#e74c3c;margin:15px 0;font-weight:700}
+        .meter-text{color:rgba(255,255,255,.7);font-size:14px;min-height:25px}
+        .meter-btn{padding:14px 35px;background:#e74c3c;border:none;border-radius:50px;color:white;font-size:16px;font-weight:600;cursor:pointer}
+
+        /* P7 - LIBRO */
+        #s7{background:radial-gradient(ellipse at center,#1a2a3e,#0a0a1a)}
+        .book{background:white;border-radius:15px;overflow:hidden;box-shadow:0 15px 50px rgba(0,0,0,.4);max-width:500px;width:90%}
+        .book-img{width:100%;height:220px;background-size:cover;background-position:center}
+        .book-content{padding:20px;text-align:center}
+        .book-ch{font-size:11px;color:#e74c3c;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+        .book-t{font-size:20px;color:#333;margin-bottom:10px;font-weight:600}
+        .book-p{font-size:13px;color:#666;line-height:1.7;margin-bottom:12px}
+        .book-d{font-size:11px;color:#999}
+        .book-nav{display:flex;justify-content:center;gap:12px;margin-top:15px}
+        .book-btn{width:45px;height:45px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);color:white;font-size:18px;cursor:pointer}
+        .book-btn:hover{background:#e74c3c;border-color:#e74c3c}
+
+        /* P8 - RAZONES */
+        #s8{background:radial-gradient(ellipse at center,#2a1a2e,#0a0a1a)}
+        .reason{display:flex;gap:12px;padding:10px 12px;margin:6px 0;background:rgba(255,255,255,.08);border-radius:10px;border-left:3px solid #e74c3c;opacity:0;transform:translateX(-20px);transition:all .4s}
+        .reason.show{opacity:1;transform:translateX(0)}
+        .reason-n{color:#e74c3c;font-weight:700;min-width:30px}
+        .reason-t{color:rgba(255,255,255,.9);font-size:13px;line-height:1.5}
+        .scroll{max-height:75vh;overflow-y:auto;padding-right:5px}
+        .scroll::-webkit-scrollbar{width:5px}
+        .scroll::-webkit-scrollbar-thumb{background:#e74c3c;border-radius:5px}
+
+        /* P9 - NO PULSAR */
+        #s9{background:radial-gradient(ellipse at center,#3a1a1a,#0a0a1a)}
+        .dont{font-size:42px;color:#e74c3c;animation:pulse 2s infinite;margin-bottom:25px}
+        .dont-btn{padding:20px 50px;background:#e74c3c;border:none;border-radius:15px;color:white;font-size:22px;font-weight:700;cursor:pointer;box-shadow:0 10px 40px rgba(231,76,60,.5)}
+        .dont-result{display:none;text-align:center;animation:popIn .5s}
+        .dont-result h2{color:white;font-size:28px;margin:20px 0 10px}
+        .dont-result p{color:rgba(255,255,255,.7);font-size:16px}
+
+        /* P10 - TORTA */
+        #s10{background:radial-gradient(ellipse at center,#2a1a2e,#0a0a1a)}
+        .cake{font-size:120px;animation:float 3s ease-in-out infinite}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+        .candles{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:15px 0;min-height:60px}
+        .candle{width:8px;height:30px;background:linear-gradient(to bottom,#ffeaa7,#fdcb6e);border-radius:3px;position:relative}
+        .candle.lit::before{content:'';position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:6px;height:12px;background:linear-gradient(to top,#f39c12,#fff);border-radius:50%;box-shadow:0 0 10px rgba(243,156,18,.6)}
+        .wish{display:none;font-size:20px;color:white;margin-top:20px;text-align:center}
+        .wish.show{display:block;animation:fadeIn .5s}
+
+        /* P11 - CARTA */
+        #s11{background:radial-gradient(ellipse at center,#3a2a1e,#0a0a1a)}
+        .letter{background:linear-gradient(to bottom,#fdf6e3,#f5e6c8);padding:35px;border-radius:5px;max-width:500px;width:90%;box-shadow:0 25px 60px rgba(0,0,0,.5);transform:rotate(-1deg);max-height:75vh;overflow-y:auto}
+        .letter::-webkit-scrollbar{width:5px}
+        .letter::-webkit-scrollbar-thumb{background:#8b5a2b;border-radius:5px}
+        .letter h3{font-family:Georgia,serif;font-size:28px;color:#333;margin-bottom:20px;font-style:italic}
+        .letter p{font-family:Georgia,serif;font-size:17px;color:#444;line-height:2;margin-bottom:12px;font-style:italic}
+        .letter .sig{font-family:Georgia,serif;font-size:22px;color:#e74c3c;text-align:right;margin-top:25px;font-style:italic}
+
+        /* P12 - SECRETO */
+        #s12{background:radial-gradient(ellipse at center,#1a0a2e,#0a0a1a)}
+        .lock{font-size:70px;animation:pulse 2s infinite}
+        .sec-text{color:white;font-size:22px;margin:20px 0;line-height:1.6}
+        .sec-msg{display:none;text-align:center;animation:fadeIn 1s}
+        .sec-msg h2{color:white;font-size:26px;margin-bottom:15px}
+        .sec-msg p{color:rgba(255,255,255,.8);font-size:16px;line-height:1.8}
+
+        /* P13 - FINAL */
+        #s13{background:#000}
+        .f-line{font-size:26px;color:white;opacity:0;transform:translateY(15px);transition:all 1s;margin:12px 0;letter-spacing:.5px}
+        .f-line.show{opacity:1;transform:translateY(0)}
+        .f-big{font-size:44px;color:#e74c3c;margin:25px 0}
+        .f-continue{font-size:32px;color:#e74c3c;animation:pulse 2s infinite;margin:25px 0}
+        .f-sub{color:rgba(255,255,255,.6);font-size:15px}
+
+        /* MÚSICA */
+        .music{position:fixed;bottom:15px;right:15px;background:rgba(0,0,0,.7);padding:10px 18px;border-radius:25px;display:flex;align-items:center;gap:10px;z-index:200}
+        .music button{width:35px;height:35px;border-radius:50%;background:#e74c3c;border:none;color:white;font-size:16px;cursor:pointer}
+        .music span{color:white;font-size:11px}
+
+        /* CONTADOR */
+        .counter{position:fixed;top:15px;left:15px;background:rgba(0,0,0,.5);color:white;padding:6px 14px;border-radius:15px;font-size:11px;z-index:100;letter-spacing:1px}
+
+        /* CORAZÓN */
+        .heart{position:fixed;bottom:25px;left:25px;width:50px;height:50px;background:#e74c3c;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;z-index:200;animation:pulse 2s infinite}
+        #musicFrame{position:fixed;bottom:0;right:0;width:0;height:0;pointer-events:none}
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <!-- P1: TRAILER -->
+    <div id="s1" class="screen active">
+        <div class="t-text" id="t1">En un mundo lleno de personas...</div>
+        <div class="t-text" id="t2">Dos personas terminaron encontrándose.</div>
+        <div class="t-text" id="t3">Y comenzaron a crear recuerdos.</div>
+        <div class="t-text" id="t4" style="color:#e74c3c">Es nuestra historia.</div>
+        <button class="btn btn-red" id="tBtn" onclick="go(2)" style="display:none">Ver historia 📖</button>
+    </div>
+
+    <!-- P2: ENTRADA -->
+    <div id="s2" class="screen">
+        <div class="intro">Feliz Cumpleaños, Elsa ❤️<span>Hoy cumples 24 años</span></div>
+        <button class="btn btn-red" onclick="go(3)">Abrir sorpresa 🎁</button>
+    </div>
+
+    <!-- P3: SOBRE -->
+    <div id="s3" class="screen">
+        <div class="envelope" onclick="document.getElementById('ae').style.display='block'"></div>
+        <div class="env-label">Para Elsa ❤️</div>
+        <div class="after-env" id="ae">
+            <h2>24 años de una persona increíble</h2>
+            <p>Comienza nuestra historia...</p>
+            <button class="btn btn-red" onclick="go(4)">Abrir regalos 🎁</button>
+        </div>
+    </div>
+
+    <!-- P4: CAJAS -->
+    <div id="s4" class="screen">
+        <div class="title">🎁 Elige una caja</div>
+        <div class="gifts">
+            <div class="gift" onclick="openGift(0,this)">🎁</div>
+            <div class="gift" onclick="openGift(1,this)">🎁</div>
+            <div class="gift" onclick="openGift(2,this)">🎁</div>
+            <div class="gift" onclick="openGift(3,this)">🎁</div>
+            <div class="gift" onclick="openGift(4,this)">🎁</div>
+            <div class="gift" onclick="openGift(5,this)" style="background:#9b59b6">🔒</div>
+        </div>
+        <div class="gift-msg" id="gm"></div>
+        <button class="btn btn-red" id="gNext" onclick="go(5)" style="display:none">Siguiente 🗺️</button>
+    </div>
+
+    <!-- P5: MAPA -->
+    <div id="s5" class="screen">
+        <div class="scroll">
+            <div class="title">🗺️ Mapa de Recuerdos</div>
+            <div class="map-point" onclick="showMap(0)">❤️ <span>Primer recuerdo</span></div>
+            <div class="map-point" onclick="showMap(1)">📸 <span>Primera foto</span></div>
+            <div class="map-point" onclick="showMap(2)">😂 <span>Momento gracioso</span></div>
+            <div class="map-point" onclick="showMap(3)">🌹 <span>Momento especial</span></div>
+            <div class="map-point" onclick="showMap(4)">🎂 <span>Hoy - Tu cumpleaños</span></div>
+            <div class="map-detail" id="md"></div>
+            <button class="btn btn-red" onclick="go(6)">Siguiente ❤️</button>
+        </div>
+    </div>
+
+    <!-- P6: MEDIDOR -->
+    <div id="s6" class="screen">
+        <div class="title">❤️ Medidor de Amor</div>
+        <div class="meter-bar"><div class="meter-fill" id="mFill"></div></div>
+        <div class="meter-pct" id="mPct">0%</div>
+        <div class="meter-text" id="mTxt">Pulsa el botón...</div>
+        <button class="meter-btn" id="mBtn" onclick="startMeter()">Medir amor ❤️</button>
+        <button class="btn btn-red" id="mNext" onclick="go(7)" style="display:none">Siguiente 📖</button>
+    </div>
+
+    <!-- P7: LIBRO -->
+    <div id="s7" class="screen">
+        <div class="title">📖 Nuestra Historia</div>
+        <div id="bProg" style="color:rgba(255,255,255,.5);font-size:12px;margin-bottom:15px">Capítulo 1 / 5</div>
+        <div class="book" id="bPage"></div>
+        <div class="book-nav">
+            <button class="book-btn" id="bPrev" onclick="bPrev()">←</button>
+            <button class="book-btn" id="bNext" onclick="bNext()">→</button>
+        </div>
+        <button class="btn btn-purple" onclick="go(8)">Siguiente 💖</button>
+    </div>
+
+    <!-- P8: RAZONES -->
+    <div id="s8" class="screen">
+        <div class="scroll">
+            <div class="title">💖 24 razones por las que te quiero</div>
+            <div id="rList"></div>
+            <button class="btn btn-red" onclick="go(9)">Siguiente 🚫</button>
+        </div>
+    </div>
+
+    <!-- P9: NO PULSAR -->
+    <div id="s9" class="screen">
+        <div id="dC">
+            <div class="dont">🚫 NO PULSAR</div>
+            <button class="dont-btn" onclick="dontPress()">NO PULSAR</button>
+        </div>
+        <div class="dont-result" id="dR">
+            <div style="font-size:60px">😂❤️</div>
+            <h2>Sabía que lo ibas a pulsar</h2>
+            <p>Pero me gusta que seas curiosa. Eres genial, Elsa.</p>
+            <button class="btn btn-red" onclick="go(10)">Siguiente 🎂</button>
+        </div>
+    </div>
+
+    <!-- P10: TORTA -->
+    <div id="s10" class="screen">
+        <div class="cake">🎂</div>
+        <div class="candles" id="candles"></div>
+        <button class="btn btn-blue" id="blowBtn" onclick="blow()">💨 Apagar velas</button>
+        <div class="wish" id="wish">✨ Ahora pide un deseo... ✨<br><span style="font-size:14px;color:rgba(255,255,255,.6)">Y ojalá me incluyas. ❤️</span></div>
+        <button class="btn btn-red" id="cNext" style="display:none" onclick="go(11)">Siguiente 💌</button>
+    </div>
+
+    <!-- P11: CARTA -->
+    <div id="s11" class="screen">
+        <div class="letter">
+            <h3>Querida Elsa,</h3>
+            <p>Si pudiera regalarte algo más que un cumpleaños bonito, te regalaría la oportunidad de verte como yo te veo...</p>
+            <p>Verías a una persona increíble, llena de luz, que ilumina cada día de mi vida simplemente siendo ella misma.</p>
+            <p>Gracias por ser la persona más maravillosa que he conocido. Gracias por tu sonrisa, tu amor, y por simplemente existir.</p>
+            <p>Feliz cumpleaños, mi amor. Que este nuevo año traiga toda la felicidad que mereces. 🌹</p>
+            <div class="sig">Con todo mi amor ❤️</div>
+        </div>
+        <button class="btn btn-red" onclick="go(12)">Siguiente 🔐</button>
+    </div>
+
+    <!-- P12: SECRETO -->
+    <div id="s12" class="screen">
+        <div class="lock">🔐</div>
+        <div class="sec-text">Último capítulo bloqueado</div>
+        <p style="color:rgba(255,255,255,.6);font-style:italic;margin-bottom:20px">"Has llegado hasta aquí..."</p>
+        <button class="btn btn-red" onclick="unlock()">Desbloquear ❤️</button>
+        <div class="sec-msg" id="sMsg">
+            <div style="font-size:60px">❤️</div>
+            <h2>Si llegaste hasta aquí...</h2>
+            <p>Quiero que sepas que eres la persona más importante de mi vida.</p>
+            <p style="color:#e74c3c;font-weight:700;margin-top:15px">Te quiero infinitamente. ❤️</p>
+            <button class="btn btn-red" onclick="go(13)">Final ✨</button>
+        </div>
+    </div>
+
+    <!-- P13: FINAL -->
+    <div id="s13" class="screen">
+        <div class="f-line" id="f1">Y después de todos estos recuerdos...</div>
+        <div class="f-line" id="f2">Me di cuenta de algo.</div>
+        <div class="f-line" id="f3">No quiero que nuestra historia termine aquí.</div>
+        <div class="f-line f-continue" id="f4">CONTINUARÁ... ❤️</div>
+        <div class="f-line f-sub" id="f5">Porque todavía nos quedan muchos recuerdos por crear.</div>
+        <div class="f-line f-big" id="f6">Feliz cumpleaños, Elsa 🎂</div>
+        <button class="btn btn-red" id="vBtn" onclick="window.open('https://www.youtube.com/watch?v=JxNZwsIRjJo','_blank')" style="display:none;margin-top:25px">🎵 Ver nuestro video 🎵</button>
+    </div>
+
+    <div class="counter" id="cnt">1 / 13</div>
+    <div class="heart" onclick="alert('Te quiero mucho, Elsa ❤️')">❤️</div>
+    <div class="music">
+        <button id="mBtn2" onclick="toggleMusic()">▶️</button>
+        <span>♫ Nuestra canción</span>
+    </div>
+    <div id="musicFrame"></div>
+
+    <script>
+        // ESTRELLAS
+        const st=document.getElementById('stars');
+        for(let i=0;i<80;i++){const s=document.createElement('div');s.className='star';s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*2}s;width:${1+Math.random()*2}px;height:${1+Math.random()*2}px`;st.appendChild(s)}
+
+        // TRAILER
+        ['t1','t2','t3','t4'].forEach((id,i)=>setTimeout(()=>document.getElementById(id).classList.add('show'),(i+1)*2200));
+        setTimeout(()=>document.getElementById('tBtn').style.display='inline-block',10000);
+
+        // NAVEGACIÓN
+        let cur=1;const tot=13;
+        function go(n){document.getElementById('s'+cur).classList.remove('active');cur=n;document.getElementById('s'+cur).classList.add('active');document.getElementById('cnt').textContent=cur+' / '+tot;
+            if(n===7)loadBook();if(n===8)loadReasons();if(n===10)createCandles();if(n===13)finalAnim()}
+
+        // CAJAS
+        const gifts=['Una foto que representa todo lo que siento por ti. ❤️','"Eres la persona que hace que todo tenga sentido."','Nuestra canción. Cada vez que la escucho, pienso en ti.','Un recuerdo que guardo: el día que te conocí.','Esta flor es para ti. Mereces todo lo bonito. 🌹'];
+        let gOpen=0;
+        function openGift(i,el){if(el.classList.contains('open'))return;el.classList.add('open');el.textContent=['📸','💌','🎵','🥹','🌹'][i];document.getElementById('gm').innerHTML=gifts[i];document.getElementById('gm').classList.add('show');gOpen++;if(gOpen>=5)document.getElementById('gNext').style.display='inline-block'}
+
+        // MAPA
+        const mData=['Aquí ocurrió algo que todavía recuerdo. Fue el día que todo comenzó.','Esta foto guarda un momento que nunca voy a olvidar.','Jajaja, este día me morí de risa. Eres la más divertida.','Este momento fue mágico. Contigo todo es especial.','Hoy celebramos tus 24 años. Esto solo es el comienzo.'];
+        function showMap(i){const d=document.getElementById('md');d.innerHTML=mData[i];d.classList.add('show')}
+
+        // MEDIDOR
+        function startMeter(){document.getElementById('mBtn').style.display='none';let p=0;const int=setInterval(()=>{p+=Math.random()*12;if(p>100)p=100;document.getElementById('mFill').style.width=p+'%';document.getElementById('mPct').textContent=Math.round(p)+'%';
+            if(p>=30)document.getElementById('mTxt').textContent='25%...';
+            if(p>=60)document.getElementById('mTxt').textContent='50%...';
+            if(p>=90)document.getElementById('mTxt').textContent='99%...';
+            if(p>=100){clearInterval(int);document.getElementById('mTxt').innerHTML='<span style="color:#e74c3c;font-weight:700">ERROR: NO EXISTE UN MÁXIMO ❤️</span>';document.getElementById('mNext').style.display='inline-block';confetti()}},150)}
+
+        // LIBRO
+        const bData=[
+            {ch:'Capítulo 01',t:'El día que todo comenzó',p:'Fue un día normal que se convirtió en el más especial de mi vida.',d:'2024',img:'hermosa.jpg'},
+            {ch:'Capítulo 02',t:'Tu forma de ser',p:'Me encanta cómo eres tú. Sin pretensiones. Simplemente increíble.',d:'2024',img:'amo.jpg'},
+            {ch:'Capítulo 03',t:'Un recuerdo que guardo',p:'Ese día terminó siendo uno de esos momentos que me gusta recordar.',d:'2025',img:'yes.jpg'},
+            {ch:'Capítulo 04',t:'Tu sonrisa',p:'Tu sonrisa ilumina cualquier día nublado.',d:'2025',img:'image2.jpg'},
+            {ch:'Capítulo 05',t:'Para siempre',p:'Y este capítulo apenas comienza. Te quiero, Elsa. ❤️',d:'2026',img:'image.jpg'}
+        ];
+        let bIdx=0;
+        function loadBook(){const b=bData[bIdx];document.getElementById('bPage').innerHTML=`<div class="book-img" style="background-image:url('${b.img}')"></div><div class="book-content"><div class="book-ch">${b.ch}</div><div class="book-t">${b.t}</div><div class="book-p">${b.p}</div><div class="book-d">${b.d}</div></div>`;document.getElementById('bProg').textContent=`Capítulo ${bIdx+1} / ${bData.length}`;document.getElementById('bPrev').disabled=bIdx===0;document.getElementById('bNext').disabled=bIdx===bData.length-1}
+        function bNext(){if(bIdx<bData.length-1){bIdx++;loadBook()}}
+        function bPrev(){if(bIdx>0){bIdx--;loadBook()}}
+
+        // RAZONES
+        const razon=['Tu forma de hacerme sonreír','Tu manera de ser tú misma','Tus pequeños detalles','Tu forma de hablar','Tu paciencia','Tu sonrisa','Cómo me haces sentir especial','Tu energía positiva','Cómo me escuchas','Tus abrazos','Tu sentido del humor','Tu preocupación por los demás','Tu valentía','Tu creatividad','Cómo amas','Tu determinación','Tu bondad','Cómo haces todo fácil','Tus conversaciones','Tu belleza','Cómo me complementas','Todo lo vivido','Lo que falta por vivir','Tú, simplemente tú ❤️'];
+        function loadReasons(){const c=document.getElementById('rList');c.innerHTML='';razon.forEach((r,i)=>{const d=document.createElement('div');d.className='reason';d.innerHTML=`<span class="reason-n">${String(i+1).padStart(2,'0')}</span><span class="reason-t">${r}</span>`;c.appendChild(d);setTimeout(()=>d.classList.add('show'),i*200)})}
+
+        // NO PULSAR
+        function dontPress(){document.getElementById('dC').style.display='none';document.getElementById('dR').style.display='block';confetti()}
+
+        // VELAS
+        function createCandles(){const c=document.getElementById('candles');c.innerHTML='';for(let i=0;i<24;i++){const d=document.createElement('div');d.className='candle lit';c.appendChild(d)}}
+        function blow(){document.querySelectorAll('.candle').forEach((c,i)=>setTimeout(()=>c.classList.remove('lit'),i*40));setTimeout(()=>{document.getElementById('blowBtn').style.display='none';document.getElementById('wish').classList.add('show');document.getElementById('cNext').style.display='inline-block';confetti()},1200)}
+
+        // SECRETO
+        function unlock(){document.querySelector('#s12 > .lock').style.display='none';document.querySelector('#s12 > .sec-text').style.display='none';document.querySelector('#s12 > p').style.display='none';document.querySelector('#s12 > .btn').style.display='none';document.getElementById('sMsg').style.display='block'}
+
+        // FINAL
+        function finalAnim(){['f1','f2','f3','f4','f5','f6'].forEach((id,i)=>setTimeout(()=>document.getElementById(id).classList.add('show'),(i+1)*2200));setTimeout(()=>{document.getElementById('vBtn').style.display='inline-block';confetti()},15000)}
+
+        // CONFETTI
+        function confetti(){const cols=['#ff6b6b','#feca57','#48dbfb','#ff9ff3','#54a0ff','#e74c3c'];for(let i=0;i<80;i++){setTimeout(()=>{const c=document.createElement('div');c.className='confetti';c.style.cssText=`left:${Math.random()*100}vw;background:${cols[Math.floor(Math.random()*cols.length)]};border-radius:${Math.random()>.5?'50%':'0'};width:${5+Math.random()*8}px;height:${5+Math.random()*8}px;animation-duration:${2+Math.random()*2}s`;document.body.appendChild(c);setTimeout(()=>c.remove(),4000)},i*15)}for(let i=0;i<10;i++){setTimeout(()=>{const b=document.createElement('div');b.className='balloon';b.textContent=['🎈','🎉','❤️','💕'][Math.floor(Math.random()*4)];b.style.cssText=`left:${Math.random()*100}vw;animation-duration:${3+Math.random()*3}s;font-size:${35+Math.random()*25}px`;document.body.appendChild(b);setTimeout(()=>b.remove(),6000)},i*250)}}
+
+        // MÚSICA
+        let mp=false,player;
+        const t=document.createElement('script');t.src="https://www.youtube.com/iframe_api";document.head.appendChild(t);
+        function onYouTubeIframeAPIReady(){player=new YT.Player('musicFrame',{height:'0',width:'0',videoId:'JxNZwsIRjJo',playerVars:{autoplay:0}})}
+        function toggleMusic(){mp=!mp;document.getElementById('mBtn2').textContent=mp?'⏸️':'▶️';if(player&&player.playVideo){if(mp)player.playVideo();else player.pauseVideo()}}
+
+        document.addEventListener('contextmenu',e=>e.preventDefault());
+    </script>
+</body>
+</html>
